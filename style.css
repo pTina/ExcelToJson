@@ -1,0 +1,17 @@
+/* 폰트 */
+.font-roboto{
+    font-family: 'Roboto Mono', monospace;
+}
+
+/*  */
+.bg-primary{
+    background-color: #f8fafb !important;
+}
+
+.txt-primary{
+    color: #3f66d3 !important;
+}
+
+.form-control{
+    line-height: 2;
+}
