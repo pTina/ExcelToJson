@@ -4,3 +4,25 @@ chpater	파일명
 2	3
 5	4
 6	5
+
+
+name	id	age
+Sybil Stark	1	10
+Abbot Rosario	2	20
+Alec Duran	3	30
+Ria O'connor	4	10
+Wade Fleming	5	10
+
+회사	판매
+A	40
+B	1000
+C	4900
+D	300
+E	400
+
+판매	주소
+40	경기도
+1000	서울
+4900	경남
+300	전남
+400	세종

@@ -14,18 +14,17 @@ const $btnConvertChart = $('#btnConvertChart');
 class Converter{
     constructor(inputStr){
         this._input = inputStr;
-        this._excelData;    // array
-        this._jsonData;     // string
-
+        this._jsonData;     // JSON
         this.convert(this._input);
+        this._keyNum;
     }
 
-    get excelData(){
-        return this._excelData;
+    get keyNum(){
+        return this._keyNum;
     }
 
-    set excelData(val){
-        this._excelData = val;
+    set keyNum(val){
+        this._keyNum = val;
     }
 
     get jsonData(){
@@ -42,7 +41,8 @@ class Converter{
         let testStr = inputArr.shift();
         testStr = this.addTab(testStr);
         const KEY = testStr.split('\t');
-        const col = KEY.length;
+        this.keyNum = KEY.length;
+        
         let data = [];
         
         for(let val of inputArr){
@@ -58,6 +58,7 @@ class Converter{
         }
 
         this.showJson(data);
+        this.jsonData = data;
     }
 
     showJson(json){
@@ -93,87 +94,6 @@ class Converter{
     }
 }
 
-// const labels = [
-//     'January',
-//     'February',
-//     'March',
-//     'April',
-//     'May',
-//     'June',
-// ];
-
-// const data = {
-//     labels: labels,
-//     datasets: [{
-//         label: 'My First dataset',
-//         backgroundColor: 'rgb(255, 99, 132)',
-//         borderColor: 'rgb(255, 99, 132)',
-//         data: [0, 10, 5, 2, 20, 30, 45],
-//     }]
-// };
-
-// const config = {
-//     type: 'line',
-//     data: data,
-//     options: {}
-// };
-
-// class ChartData{
-//     constructor(dataArr){
-//         this._data = dataArr;
-//         this.fisrtItem = JSON.parse(this.data[0]);
-//         this._labels;
-//         this._datasets;
-//         this._config;
-//         this._key;
-//         // this.getLabels();
-//         this.getKey();
-//     }
-
-//     get data(){
-//         return this._data;
-//     }
-
-//     set key(val){
-//        this._key = val; 
-//     }
-
-//     getKey(){
-//         console.log(Object.keys(this.fisrtItem));
-//     }
-//     getLabels(){
-//         for(let data of this._data){
-//             console.log(JSON.parse(data));
-//         }
-//     }
-
-// }
-
-
-// $(document).ready(function(){ });와 동일
-// => $(function(){})
-$(function () {
-    // input 실시간 감지
-    $excelData.on('propertychange change keyup paste', (e) => {
-        const $target = $excelData;
-        const excelStr = $target.val().trim();
-        const converter = new Converter(excelStr);
-    })
-
-    $btnConvertChart.on('click', (e)=>{
-        // changeProperty();
-    })
-
-    // $btnConvertChart.on('click', function(){
-    //     const dataArr = converter.excelData;
-    //     const chartData = new ChartData(dataArr);
-    // })
-
-    
-
-    // makeChart();
-    
-});
 
 // function changeProperty(){
 //     console.log($excelData);
@@ -181,10 +101,136 @@ $(function () {
 // }
 
 
+class MyChart{
+    constructor(wrap, info){
+        this._html = `<canvas id="myChart"></canvas>`;
+        this._htmlId = '#myChart';
+        this._wrap = wrap;
+        this._info = info;
+        this._datasets = {
+            label: 'My First dataset',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [0, 10, 5, 2, 20, 30, 45],
+        }
+        this._labels;
+        this._data = {
+            labels: 'none',
+            datasets: []
+        };
 
-function makeChart(config) {
-    const myChart = new Chart(
-        $('#myChart'),
-        config
-      );
+        this.getInfoData();
+    }
+
+    get htmlId(){
+        return this._htmlId;
+    }
+
+    get html(){
+        return this._html;
+    }
+
+    get labels(){
+        return this._labels;   
+    }
+
+    set labels(val){
+        this._labels = val;
+        this._data.labels = val;
+    }
+
+    get datasets(){
+        return this._datasets;
+    }
+
+    set datasets(val){
+        this._datasets.data = val;
+        this._data.datasets.push(this.datasets);
+    }
+
+    get info(){
+        return this._info;
+    }
+
+    get wrap(){
+        return this._wrap;
+    }
+
+    get data(){
+        return this._data;
+    }
+
+    getInfoData(){
+        const INFO = this.info;
+        const firstItem = INFO[0];
+        const _keys = Object.keys(firstItem);
+
+        let labelList = [];
+        let dataList = [];
+        for(let idx in INFO){
+            const obj = INFO[idx];
+            Object.entries(obj).forEach(([key, val], idx)=>{
+                if(idx === 0){
+                    labelList.push(val);
+                }else if(idx === 1){
+                    dataList.push(val);
+                }
+            })
+        }
+
+        dataList = dataList.map((item) =>{ Number(item);});
+
+        if(dataList.includes(undefined)){
+            alert('두번재 컬럼값이 숫자인 경우에만 가능합니다.');
+            return false;
+        }
+
+        this.labels = labelList;
+        this.datasets = dataList;
+
+        const config = {
+            type: 'line',
+            data: this.data,
+            options: {}
+        };
+
+        this.wrap.html(this.html);
+
+        const myChart = new Chart(
+            $(`${this.htmlId}`),
+            config
+        );
+
+    }
+
 }
+
+
+// $(document).ready(function(){ });와 동일
+// => $(function(){})
+$(function () {
+    let converter = '';
+    // input 실시간 감지
+    $excelData.on('propertychange change keyup paste', (e) => {
+        const $target = $excelData;
+        const excelStr = $target.val().trim();
+        converter = new Converter(excelStr);
+    })
+
+    $btnConvertChart.on('click', (e)=>{
+        const colNum = converter.keyNum;
+        if(colNum !== 2){
+            alert('컬럼이 2개인 경우만 사용가능합니다.');
+            return false;
+        }
+
+        const info = converter.jsonData;
+        if(info === undefined || info.length === 0){
+            alert('데이터가 없습니다.');
+            return false;
+        }
+
+        const myChart = new MyChart($('#myChartWrap'), info);
+        // changeProperty();
+    })
+});
