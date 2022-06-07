@@ -38,8 +38,7 @@ class Converter{
     convert(inputStr) {
         const _input = inputStr;
         const inputArr = _input.split('\n');
-        let testStr = inputArr.shift();
-        const _KEY = testStr.split('\t');
+        let _KEY = inputArr.shift().split('\t');
 
         // [예외처리]
         // 1) \t 만 있는 경우
@@ -60,17 +59,6 @@ class Converter{
                 const obj = this.getObj(KEY, valArr);
                 data.push(obj);
             }
-            
-            // if(this.keyNum > 1){
-            //     testStr = this.addTab(testStr);
-            // }
-            // const _val = testStr.split('\t');
-            // const obj = new Object();
-            // for(let idx in KEY){
-            //     obj[KEY[idx]] = _val[idx];
-            // }
-
-            // data.push(obj);
         }
 
         this.showJson(data);
@@ -95,7 +83,6 @@ class Converter{
         // str = JSON.stringify(json);
         // str = str.split('},').join('}, \n');
         // $jsonData.val(str);
-        
     }
 
     getObj(keyArr, valArr){
@@ -201,7 +188,6 @@ class MyChart{
         }
 
         dataList = dataList.map((item) => Number(item));
-        console.log(dataList);
         for(let item of dataList){
             if(isNaN(item)){
                 alert('두번재 컬럼값이 숫자인 경우에만 가능합니다.');
@@ -233,7 +219,7 @@ class MyChart{
 $(function () {
     let converter = '';
     // input 실시간 감지
-    $excelData.on('propertychange change keyup paste', (e) => {
+    $excelData.on('propertychange change keyup paset input', (e) => {
         const $target = $excelData;
         const excelStr = $target.val().trim();
         converter = new Converter(excelStr);
