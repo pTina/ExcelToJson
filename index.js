@@ -16,7 +16,11 @@ class Converter{
         this._input = inputStr;
         this._jsonData;     // JSON
         this._keyNum;
-        this.convert(this._input);
+        this.convert();
+    }
+
+    get input(){
+        return this._input;
     }
 
     get keyNum(){
@@ -35,9 +39,8 @@ class Converter{
         this._jsonData = val;
     }
 
-    convert(inputStr) {
-        const _input = inputStr;
-        const inputArr = _input.split('\n');
+    convert() {
+        const inputArr = this.input.split('\n');
         let _KEY = inputArr.shift().split('\t');
 
         // [예외처리]
@@ -222,8 +225,7 @@ $(function () {
     // propertychange change keyup paste 
     // input 이벤트: input의 value 값이 바뀔 때마다 발생한다.
     $excelData.on('input', (e) => {
-        const $target = $excelData;
-        const excelStr = $target.val().trim();
+        const excelStr = $excelData.val().trim();
         converter = new Converter(excelStr);
     })
 
