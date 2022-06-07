@@ -15,8 +15,8 @@ class Converter{
     constructor(inputStr){
         this._input = inputStr;
         this._jsonData;     // JSON
-        this.convert(this._input);
         this._keyNum;
+        this.convert(this._input);
     }
 
     get keyNum(){
@@ -39,15 +39,25 @@ class Converter{
         const _input = inputStr;
         const inputArr = _input.split('\n');
         let testStr = inputArr.shift();
-        testStr = this.addTab(testStr);
-        const KEY = testStr.split('\t');
+        const _KEY = testStr.split('\t');
+
+        // [예외처리]
+        // 1) \t 만 있는 경우
+        // 2) 중간에 빈 문자열이 포함되어있는 경우
+        const KEY = _KEY.filter((item) => item !== '' );
         this.keyNum = KEY.length;
+        if(this.keyNum === 0){
+            $jsonData.val('');
+            return false;
+        }
         
         let data = [];
         
         for(let val of inputArr){
             let testStr = val.trim();
-            testStr = this.addTab(testStr);
+            if(this.keyNum > 1){
+                testStr = this.addTab(testStr);
+            }
             const _val = testStr.split('\t');
             const obj = new Object();
             for(let idx in KEY){
@@ -87,7 +97,7 @@ class Converter{
             return str;
 
         }else{
-            str = str.concat('\t null');
+            str = str.concat('\tnull');
             return str;
         }
 
@@ -107,13 +117,13 @@ class MyChart{
         this._htmlId = '#myChart';
         this._wrap = wrap;
         this._info = info;
+        this._labels;
         this._datasets = {
             label: 'My First dataset',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
             data: [0, 10, 5, 2, 20, 30, 45],
         }
-        this._labels;
         this._data = {
             labels: 'none',
             datasets: []
@@ -162,8 +172,6 @@ class MyChart{
 
     getInfoData(){
         const INFO = this.info;
-        const firstItem = INFO[0];
-        const _keys = Object.keys(firstItem);
 
         let labelList = [];
         let dataList = [];
@@ -178,11 +186,13 @@ class MyChart{
             })
         }
 
-        dataList = dataList.map((item) =>{ Number(item);});
-
-        if(dataList.includes(undefined)){
-            alert('두번재 컬럼값이 숫자인 경우에만 가능합니다.');
-            return false;
+        dataList = dataList.map((item) => Number(item));
+        console.log(dataList);
+        for(let item of dataList){
+            if(isNaN(item)){
+                alert('두번재 컬럼값이 숫자인 경우에만 가능합니다.');
+                return false;
+            }
         }
 
         this.labels = labelList;
@@ -200,9 +210,7 @@ class MyChart{
             $(`${this.htmlId}`),
             config
         );
-
     }
-
 }
 
 
