@@ -54,17 +54,23 @@ class Converter{
         let data = [];
         
         for(let val of inputArr){
-            let testStr = val.trim();
-            if(this.keyNum > 1){
-                testStr = this.addTab(testStr);
+            const valArr = val.trim().split('\t').filter((item) => item !== '');
+            
+            if(valArr.length > 0){
+                const obj = this.getObj(KEY, valArr);
+                data.push(obj);
             }
-            const _val = testStr.split('\t');
-            const obj = new Object();
-            for(let idx in KEY){
-                obj[KEY[idx]] = _val[idx];
-            }
+            
+            // if(this.keyNum > 1){
+            //     testStr = this.addTab(testStr);
+            // }
+            // const _val = testStr.split('\t');
+            // const obj = new Object();
+            // for(let idx in KEY){
+            //     obj[KEY[idx]] = _val[idx];
+            // }
 
-            data.push(obj);
+            // data.push(obj);
         }
 
         this.showJson(data);
@@ -92,15 +98,23 @@ class Converter{
         
     }
 
-    addTab(str){
-        if(str.indexOf('\t') > -1){
-            return str;
+    getObj(keyArr, valArr){
+        const obj = new Object();
+        let value = '';
 
-        }else{
-            str = str.concat('\tnull');
-            return str;
+        for(let idx in keyArr){
+            // 예외처리
+            // 3) key값보다 value가 적은 경우
+            if(valArr[idx] === undefined){
+                value = 'null';
+            }else{
+                value = valArr[idx];
+            }
+
+            obj[keyArr[idx]] = value;
         }
 
+        return obj;
     }
 }
 
