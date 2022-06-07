@@ -219,7 +219,9 @@ class MyChart{
 $(function () {
     let converter = '';
     // input 실시간 감지
-    $excelData.on('propertychange change keyup paset input', (e) => {
+    // propertychange change keyup paste 
+    // input 이벤트: input의 value 값이 바뀔 때마다 발생한다.
+    $excelData.on('input', (e) => {
         const $target = $excelData;
         const excelStr = $target.val().trim();
         converter = new Converter(excelStr);
